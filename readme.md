@@ -64,11 +64,13 @@ const categories = "Imported Tweets, My Custom Category"
 
 ### 3. Convert
 
-Run `node index.js` and your selected tweets will be output into `/export`:
+Run `node index.js` and your selected tweets will be output into `/export` (replies will be output to `/export/replies`):
 
 ```
 /export
     1583079656760410112.md
+    /replies
+        1583079656760410114.md
 ```
 
 ## Contributing

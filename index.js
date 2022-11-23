@@ -26,6 +26,11 @@ const twitterDateToDate = (date) => {
 
 outputTweet = (tweet) => {
 	const tweetDate = twitterDateToDate(tweet.created_at)
+	const year = tweetDate.getFullYear()
+	const month = ('0' + (tweetDate.getUTCMonth() + 1)).slice(-2)
+	const date = ('0' + tweetDate.getDate()).slice(-2)
+	const filePath = `${year}-${month}-${date}-${tweet.id}`
+	const isReply = !!tweet.in_reply_to_status_id
 
 	let content = tweet.full_text
 
@@ -53,6 +58,18 @@ outputTweet = (tweet) => {
 		})
 	}
 
+	if (tweet.entities.user_mentions)
+	{
+		tweet.entities.user_mentions.forEach(um => {
+			content = content.replace(`@${um.screen_name}`, `[@${um.screen_name}](https://twitter.com/${um.screen_name})`)
+		})
+	}
+
+	if (tweet.in_reply_to_status_id)
+	{
+		content += `\n\n[Replying to @${tweet.in_reply_to_screen_name}](https://twitter.com/${tweet.in_reply_to_screen_name}/status/${tweet.in_reply_to_status_id})`
+	}
+
 	const outputCategories = categories ? `\ncategories: ${categories}` : ''
 
 	const body = `---
@@ -65,7 +82,7 @@ ${attachments}
 	`;
 
 	try {
-	  fs.writeFileSync(`./export/${tweet.id}.md`, body);
+	  fs.writeFileSync(`./export/${isReply ? 'replies/' : ''}${filePath}.md`, body);
 	} catch (err) {
 	  console.error(err);
 	}
